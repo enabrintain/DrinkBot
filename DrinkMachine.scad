@@ -1,3 +1,4 @@
+$fn=50;
 tubeRadius = 20;
 innerTubeRadius = 7;
 numTubes = 7;
@@ -9,11 +10,17 @@ tubeOffset = 7;
 //pump
 pumpBracketWidth = 71;
 numPumps = 5;
+pumpBracketHoleRadius = 1.5875;
 //unit dimensions
 barbotDepth = 152;
 barbotHeight = 358;
+wallThickness = 6.5;
+
+//options
+showPumps = false;
 
 module pump() {
+    color("lightBlue",0.3)
     union(){
       translate([0, 0, 0]){
         cylinder(r1=14.5, r2=14.5, h=50.8, center=false);
@@ -35,42 +42,102 @@ module pump() {
       }
     }
 }
+
+module pumpBracketHoles(){
+    union(){
+      translate([(pumpBracketWidth/2)-5, -20, 4+pumpBracketHoleRadius]){
+          rotate([90,0,0])
+            cylinder(r1=pumpBracketHoleRadius, r2=pumpBracketHoleRadius, h=20, center=true);
+      }
+      translate([-(pumpBracketWidth/2)+5, -20, 4+pumpBracketHoleRadius]){
+          rotate([90,0,0])
+            cylinder(r1=pumpBracketHoleRadius, r2=pumpBracketHoleRadius, h=20, center=true);
+      }
+      translate([-(pumpBracketWidth/2)+5, -20, 38+pumpBracketHoleRadius]){
+          rotate([90,0,0])
+            cylinder(r1=pumpBracketHoleRadius, r2=pumpBracketHoleRadius, h=20, center=true);
+      }
+      translate([(pumpBracketWidth/2)-5, -20, 38+pumpBracketHoleRadius]){
+          rotate([90,0,0])
+            cylinder(r1=pumpBracketHoleRadius, r2=pumpBracketHoleRadius, h=20, center=true);
+      }
+  }
+}
     
 module pumpBracket() {
-        union(){
+    union(){
+        difference(){
+          translate([0, -pumpBracketWidth-(wallThickness*1.45), 0])
+            cube([(pumpBracketWidth+4)*numPumps, wallThickness, 100], center=true);
+            
           translate([-219, 0, 0]){
             for (j = [1 : abs(1) : numPumps]) {
               translate([(j * (pumpBracketWidth+2)), -60, 0]){
                 pump();
+                pumpBracketHoles();
               }
-            }
-          }
-          translate([0, -pumpBracketWidth-6.5, 0]){
-            cube([(pumpBracketWidth+4)*numPumps, 2, 100], center=true);
+            }//for
           }
         }
+        if(showPumps)
+        {
+            translate([-219, 0, 0]){
+            for (j = [1 : abs(1) : numPumps]) {
+              translate([(j * (pumpBracketWidth+2)), -60, 0])
+                pump();
+              
+                }
+            }
+        }
+        
+        //tabs
+        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2),-pumpBracketWidth-(wallThickness*1.45),0])
+            cube([wallThickness, wallThickness, wallThickness*6], center=true);
+        
+        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2),-pumpBracketWidth-(wallThickness*1.45),0])
+            cube([wallThickness, wallThickness, wallThickness*6], center=true);
+        
+    }
 }
 
 
 module tubeCondensor() {
-    difference(){
-      translate([0, 0, 2]){
-        cube([(pumpBracketWidth+4)*numPumps, barbotDepth, 2.5], center=true);
-      }
-      rotate([0, 0, 45]){
-        for (i = [1 : abs(1) : numTubes]) {
-          translate([(tubeRadius * cos((i * (360 / numTubes)))),
-                     (tubeRadius * sin((i * (360 / numTubes)))), 0]){
-            cylinder(r1=tubeOR, r2=tubeOR, h=10, center=false);
+    union(){
+        difference(){
+          translate([0, 0, 2]){
+            cube([(pumpBracketWidth+4)*numPumps, barbotDepth, wallThickness], center=true);
+          }
+          rotate([0, 0, 45]){
+            for (i = [1 : abs(1) : numTubes]) {
+              translate([(tubeRadius * cos((i * (360 / numTubes)))),
+                         (tubeRadius * sin((i * (360 / numTubes)))), 0]){
+                cylinder(r1=tubeOR, r2=tubeOR, h=100, center=true);
+              }
+            }
+          }
+          for (i = [1 : abs(1) : innerNumTubes]) {
+            translate([(innerTubeRadius * cos((i * (360 / innerNumTubes)))),
+                       (innerTubeRadius * sin((i * (360 / innerNumTubes)))), 0]){
+              cylinder(r1=tubeOR, r2=tubeOR, h=100, center=true);
+            }
           }
         }
-      }
-      for (i = [1 : abs(1) : innerNumTubes]) {
-        translate([(innerTubeRadius * cos((i * (360 / innerNumTubes)))),
-                   (innerTubeRadius * sin((i * (360 / innerNumTubes)))), 0]){
-          cylinder(r1=tubeOR, r2=tubeOR, h=10, center=false);
-        }
-      }
+        //tabs
+        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2), barbotDepth/3, 2])
+            cube([wallThickness, wallThickness*4, wallThickness], center=true);
+        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2), -barbotDepth/3, 2])
+            cube([wallThickness, wallThickness*4, wallThickness], center=true);
+        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2), barbotDepth/3, 2])
+            cube([wallThickness, wallThickness*4, wallThickness], center=true);
+        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2), -barbotDepth/3, 2])
+            cube([wallThickness, wallThickness*4, wallThickness], center=true);
+        //back wall
+        translate([0,(-barbotDepth/2)-(wallThickness/2),2])
+            cube([wallThickness*4, wallThickness, wallThickness], center=true);
+        translate([(pumpBracketWidth+4)*numPumps/3,(-barbotDepth/2)-(wallThickness/2),2])
+            cube([wallThickness*4, wallThickness, wallThickness], center=true);
+        translate([-(pumpBracketWidth+4)*numPumps/3,(-barbotDepth/2)-(wallThickness/2),2])
+            cube([wallThickness*4, wallThickness, wallThickness], center=true);
     }
 }
 
@@ -79,7 +146,7 @@ module roundTubeCondensor() {
     translate([0, 0, -40]){
       difference(){
         cylinder(r1=tubeConsolidatorRadius, 
-                 r2=tubeConsolidatorRadius, h=1, center=true);
+                 r2=tubeConsolidatorRadius, h=wallThickness, center=true);
         rotate([0, 0, 45]){
           for (i = [1 : abs(1) : numTubes]) {
             translate([((tubeRadius -4) * cos((i * (360 / numTubes)))),
@@ -101,6 +168,7 @@ module roundTubeCondensor() {
 
 
 module soloCup() {    
+    color("red", 0.3)
     translate([0, 0, (cupHeight * -1)]){
       cylinder(r1=30.5, r2=44.5, h=cupHeight, center=true);
     }
@@ -110,51 +178,156 @@ module soloCup() {
 
 module sidePart(){
     hull(){
-        translate([0, -pumpBracketWidth-6.5+(barbotDepth/2), (-cupHeight*1.5)])
-            cube([2, barbotDepth, 2], center=true);
-        translate([0, -pumpBracketWidth-6.5+(barbotDepth/2), 0])
-            cube([2, barbotDepth, 2], center=true);
-        translate([0, -pumpBracketWidth+30, 150])
-            cube([2, barbotDepth/2, 2], center=true);
+        translate([0, -pumpBracketWidth-6.5+(barbotDepth/2)-(wallThickness/2), (-cupHeight*1.5)])
+            cube([wallThickness, barbotDepth+(wallThickness), 2], center=true);//*/
+        translate([0, -pumpBracketWidth-6.5+(barbotDepth/2)-(wallThickness/2), 0])
+            cube([wallThickness, barbotDepth+(wallThickness), 2], center=true);
+        translate([0, -pumpBracketWidth+30-(wallThickness/2), 150])
+            cube([wallThickness, barbotDepth/2+(wallThickness/2), 2], center=true);
     }
 }
 
 module bottomPart(){
+    union(){
     translate([0, -pumpBracketWidth-6.5+(barbotDepth/2), (-cupHeight*1.5)])
-        cube([(pumpBracketWidth+4)*numPumps, barbotDepth, 2], center=true);
+        cube([(pumpBracketWidth+4)*numPumps, barbotDepth, wallThickness], center=true);
+    
+        //tabs
+        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2), barbotDepth/3, (-cupHeight*1.5)])
+            cube([wallThickness, wallThickness*4, wallThickness], center=true);
+        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2), -barbotDepth/3, (-cupHeight*1.5)])
+            cube([wallThickness, wallThickness*4, wallThickness], center=true);
+        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2), barbotDepth/3, (-cupHeight*1.5)])
+            cube([wallThickness, wallThickness*4, wallThickness], center=true);
+        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2), -barbotDepth/3, (-cupHeight*1.5)])
+            cube([wallThickness, wallThickness*4, wallThickness], center=true);
+        
+        translate([0,(-barbotDepth/2)-(wallThickness/2)-1.5,(-cupHeight*1.5)-0.1])
+            cube([wallThickness*4, wallThickness, wallThickness], center=true);
+        translate([(pumpBracketWidth+4)*numPumps/3,(-barbotDepth/2)-(wallThickness/2)-1.5,(-cupHeight*1.5)-0.1])
+            cube([wallThickness*4, wallThickness, wallThickness], center=true);
+        translate([-(pumpBracketWidth+4)*numPumps/3,(-barbotDepth/2)-(wallThickness/2)-1.5,(-cupHeight*1.5)-0.1])
+            cube([wallThickness*4, wallThickness, wallThickness], center=true);
+        
+    }
 }
 
 
 
 module backPart(){
-    translate([0, -(barbotDepth/2)-2, -27.5])
+    union(){
         difference()
         {
-            cube([(pumpBracketWidth+4)*numPumps, 2, barbotHeight], center=true);
-            translate([(-(pumpBracketWidth*3)), 0, 0])
-                for (y = [1 : abs(1) : 2]) 
+            cube([(pumpBracketWidth+4)*numPumps, wallThickness, barbotHeight], center=true);
+            translate([-219, -(-(barbotDepth/2)-2), 100+27.5]){
+                for (j = [1 : abs(1) : numPumps]) {
+                    translate([(j * (pumpBracketWidth+2)), -60, 0]){
+                        pumpBracketHoles();
+                    }
+                }//for
+            }
+            
+            translate([(-(pumpBracketWidth*3)), 0, 0]){
+                for (y = [1 : abs(1) : 2]) {
                 for (x = [1 : abs(1) : numPumps]) 
                     rotate([90,0,0])
                         translate([(x * (pumpBracketWidth+2)), (y*-15)+36*2, 0])
                             cylinder(r1=4.75, r2=4.75, h=50, center=true);
+            }
+            }
+            
         }
-        //translate([0, -(barbotDepth/2)-2, 27.5])
-        //rotate([90,0,0]) cylinder(r1=4.75, r2=4.75, h=50, center=true);
         
+        //tabs
+        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2),0,barbotHeight/3])
+            cube([wallThickness, wallThickness, wallThickness*4], center=true);
+        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2),0,0])
+            cube([wallThickness, wallThickness, wallThickness*4], center=true);
+        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2),0,-barbotHeight/3])
+            cube([wallThickness, wallThickness, wallThickness*4], center=true);
+        
+        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2),0,barbotHeight/3])
+            cube([wallThickness, wallThickness, wallThickness*4], center=true);
+        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2),0,0])
+            cube([wallThickness, wallThickness, wallThickness*4], center=true);
+        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2),0,-barbotHeight/3])
+            cube([wallThickness, wallThickness, wallThickness*4], center=true);
+    }
 }
+// FINAL MODULES
+module fullBarBot(){
+    soloCup();
+    roundTubeCondensor();
+    color("green", 1)
+    translate([0, -1.5, 0])
+        tubeCondensor();
+    translate([0, 50+(wallThickness/2), 97.75])
+        pumpBracket();//*/
+    color("green", 1)
+    bottomPart();
+    translate([wallThickness+(((pumpBracketWidth+(wallThickness/2))*numPumps-2)/2)-0.4, 0, -2.25])
+        sidePart();//*/
+    translate([-wallThickness+(((pumpBracketWidth+(wallThickness/2))*numPumps-2)/-2)+0.4, 0, -2.25])
+        sidePart();//*/
+    color("Yellow", 1)
+    translate([0, -(barbotDepth/2)-(wallThickness/2)-1.5, -29.75])
+        backPart();//*/
+}
+
+module dxfBottomPart(){
+    projection(cut = false){
+        bottomPart();
+    }
+}
+module dxfTubeCondensor(){
+    projection(cut = false){
+        tubeCondensor();
+    }
+}
+module dxfBackPart(){
+    projection(cut = false)
+    {
+        rotate([90, 0, 0])
+        backPart();
+    }
+}
+
+module dxfSidePart(){
+    projection(cut = false)
+    {
+        rotate([0, 90, 0]){
+            difference(){
+                translate([wallThickness+(((pumpBracketWidth+(wallThickness/2))*numPumps-2)/2)-0.4, 0, -2.25])
+                    sidePart();//*/
+                translate([0, -1.5, 0])
+                    tubeCondensor();
+                translate([0, 50+(wallThickness/2), 97.75])
+                    pumpBracket();//*/
+                bottomPart();
+                translate([0, -(barbotDepth/2)-(wallThickness/2)-1.5, -29.75])
+                    backPart();//*/
+            }
+        }
+    }
+}
+
+module dxfPumpBracket(){
+    projection(cut = false){
+        rotate([90, 0, 0])
+            pumpBracket();
+    }
+}
+
+module dxfRoundTubeCondensor(){
+    projection(cut = false)
+        roundTubeCondensor();
+}
+
 // module calls
-
-soloCup();
-roundTubeCondensor();
-tubeCondensor();
-translate([0, 0, 100])
-    pumpBracket();
-translate([0, 50, 100])
-    pumpBracket();
-
-bottomPart();
-translate([((pumpBracketWidth+4)*numPumps)/2, 0, 0])
-    sidePart();
-translate([((pumpBracketWidth+4)*numPumps)/-2, 0, 0])
-    sidePart();
-backPart();
+fullBarBot();
+//dxfBottomPart();
+//dxfTubeCondensor();
+//dxfBackPart();
+//dxfSidePart();
+//dxfPumpBracket();
+//dxfRoundTubeCondensor();
