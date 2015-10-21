@@ -25,13 +25,14 @@ cupHeight = 137;
 tubeConsolidatorRadius = 24;
 tubeOffset = 7;
 //pump
-pumpBracketWidth = 71;
+pumpBracketWidth = 56.5;
 numPumps = 5;
 pumpBracketHoleRadius = 1.5875;
 //unit dimensions
 barbotDepth = 152;
 barbotHeight = 358;
 wallThickness = 6.5;
+tabWidth = 71;
 
 //options
 showPumps = false;
@@ -87,7 +88,7 @@ module pumpBracket() {
           translate([0, -pumpBracketWidth-(wallThickness*1.45), 0])
             cube([(pumpBracketWidth+4)*numPumps, wallThickness, 100], center=true);
             
-          translate([-219, 0, 0]){
+          translate([(-pumpBracketWidth*(floor(numPumps/2)+1))-(floor(numPumps/2)+1)*2, 14, 0]){
             for (j = [1 : abs(1) : numPumps]) {
               translate([(j * (pumpBracketWidth+2)), -60, 0]){
                 pump();
@@ -98,7 +99,7 @@ module pumpBracket() {
         }
         if(showPumps)
         {
-            translate([-219, 0, 0]){
+            translate([(-pumpBracketWidth*(floor(numPumps/2)+1))-(floor(numPumps/2)+1)*2, 12.5, 0]){
             for (j = [1 : abs(1) : numPumps]) {
               translate([(j * (pumpBracketWidth+2)), -60, 0])
                 pump();
@@ -139,22 +140,23 @@ module tubeCondensor() {
             }
           }
         }
+        
         //tabs
-        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2), barbotDepth/3, 2])
+        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2), barbotDepth/3, 0])
             cube([wallThickness, wallThickness*4, wallThickness], center=true);
-        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2), -barbotDepth/3, 2])
+        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2), -barbotDepth/3, 0])
             cube([wallThickness, wallThickness*4, wallThickness], center=true);
-        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2), barbotDepth/3, 2])
+        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2), barbotDepth/3, 0])
             cube([wallThickness, wallThickness*4, wallThickness], center=true);
-        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2), -barbotDepth/3, 2])
+        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2), -barbotDepth/3, 0])
             cube([wallThickness, wallThickness*4, wallThickness], center=true);
-        //back wall
-        translate([0,(-barbotDepth/2)-(wallThickness/2),2])
-            cube([wallThickness*4, wallThickness, wallThickness], center=true);
-        translate([(pumpBracketWidth+4)*numPumps/3,(-barbotDepth/2)-(wallThickness/2),2])
-            cube([wallThickness*4, wallThickness, wallThickness], center=true);
-        translate([-(pumpBracketWidth+4)*numPumps/3,(-barbotDepth/2)-(wallThickness/2),2])
-            cube([wallThickness*4, wallThickness, wallThickness], center=true);
+        
+        translate([0,(-barbotDepth/2)-(wallThickness/2),0])
+            cube([wallThickness*5, wallThickness, wallThickness], center=true);
+        translate([(tabWidth+4)*numPumps/3,(-barbotDepth/2)-(wallThickness/2), 0])
+            cube([wallThickness*5, wallThickness, wallThickness], center=true);
+        translate([-(pumpBracketWidth+4)*numPumps/3,(-barbotDepth/2)-(wallThickness/2),-0.1])
+            cube([wallThickness*5, wallThickness, wallThickness], center=true);
     }
 }
 
@@ -206,25 +208,24 @@ module sidePart(){
 
 module bottomPart(){
     union(){
-    translate([0, -pumpBracketWidth-6.5+(barbotDepth/2), (-cupHeight*1.5)])
         cube([(pumpBracketWidth+4)*numPumps, barbotDepth, wallThickness], center=true);
     
         //tabs
-        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2), barbotDepth/3, (-cupHeight*1.5)])
+        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2), barbotDepth/3, 0])
             cube([wallThickness, wallThickness*4, wallThickness], center=true);
-        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2), -barbotDepth/3, (-cupHeight*1.5)])
+        translate([(((pumpBracketWidth+4)*numPumps)/2)+(wallThickness/2), -barbotDepth/3, 0])
             cube([wallThickness, wallThickness*4, wallThickness], center=true);
-        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2), barbotDepth/3, (-cupHeight*1.5)])
+        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2), barbotDepth/3, 0])
             cube([wallThickness, wallThickness*4, wallThickness], center=true);
-        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2), -barbotDepth/3, (-cupHeight*1.5)])
+        translate([-(((pumpBracketWidth+4)*numPumps)/2)-(wallThickness/2), -barbotDepth/3, 0])
             cube([wallThickness, wallThickness*4, wallThickness], center=true);
         
-        translate([0,(-barbotDepth/2)-(wallThickness/2)-1.5,(-cupHeight*1.5)-0.1])
-            cube([wallThickness*4, wallThickness, wallThickness], center=true);
-        translate([(pumpBracketWidth+4)*numPumps/3,(-barbotDepth/2)-(wallThickness/2)-1.5,(-cupHeight*1.5)-0.1])
-            cube([wallThickness*4, wallThickness, wallThickness], center=true);
-        translate([-(pumpBracketWidth+4)*numPumps/3,(-barbotDepth/2)-(wallThickness/2)-1.5,(-cupHeight*1.5)-0.1])
-            cube([wallThickness*4, wallThickness, wallThickness], center=true);
+        translate([0,(-barbotDepth/2)-(wallThickness/2),0])
+            cube([wallThickness*5, wallThickness, wallThickness], center=true);
+        translate([(tabWidth+4)*numPumps/3,(-barbotDepth/2)-(wallThickness/2), 0])
+            cube([wallThickness*5, wallThickness, wallThickness], center=true);
+        translate([-(pumpBracketWidth+4)*numPumps/3,(-barbotDepth/2)-(wallThickness/2),-0.1])
+            cube([wallThickness*5, wallThickness, wallThickness], center=true);
         
     }
 }
@@ -236,7 +237,8 @@ module backPart(){
         difference()
         {
             cube([(pumpBracketWidth+4)*numPumps, wallThickness, barbotHeight], center=true);
-            translate([-219, -(-(barbotDepth/2)-2), 100+27.5]){
+            
+            translate([(-pumpBracketWidth*(floor(numPumps/2)+1))-(floor(numPumps/2)+1)*2,((barbotDepth/2)+2), 100+27.5]){
                 for (j = [1 : abs(1) : numPumps]) {
                     translate([(j * (pumpBracketWidth+2)), -60, 0]){
                         pumpBracketHoles();
@@ -250,7 +252,7 @@ module backPart(){
                     rotate([90,0,0])
                         translate([(x * (pumpBracketWidth+2)), (y*-15)+36*2, 0])
                             cylinder(r1=4.75, r2=4.75, h=50, center=true);
-            }
+                }
             }
             
         }
@@ -276,16 +278,19 @@ module fullBarBot(){
     soloCup();
     roundTubeCondensor();
     color("green", 1)
-    translate([0, -1.5, 0])
+    translate([0, -wallThickness+5, 0])
         tubeCondensor();
     translate([0, 50+(wallThickness/2), 97.75])
         pumpBracket();//*/
     color("green", 1)
+    
+    translate([0, -tabWidth-6.5+(barbotDepth/2), (-cupHeight*1.5)])
     bottomPart();
-    translate([wallThickness+(((pumpBracketWidth+(wallThickness/2))*numPumps-2)/2)-0.4, 0, -2.25])
+    translate([wallThickness+(((pumpBracketWidth+(wallThickness/2))*numPumps-2)/2)-0.4, -wallThickness*2-1.5, -2.25])
         sidePart();//*/
-    translate([-wallThickness+(((pumpBracketWidth+(wallThickness/2))*numPumps-2)/-2)+0.4, 0, -2.25])
+    translate([-wallThickness+(((pumpBracketWidth+(wallThickness/2))*numPumps-2)/-2)+0.4, -wallThickness*2-1.5, -2.25])
         sidePart();//*/
+    
     color("Yellow", 1)
     translate([0, -(barbotDepth/2)-(wallThickness/2)-1.5, -29.75])
         backPart();//*/
@@ -305,22 +310,32 @@ module dxfBackPart(){
     projection(cut = false)
     {
         rotate([90, 0, 0])
-        backPart();
+        difference(){
+            translate([0, -(barbotDepth/2)-(wallThickness/2)-1.5, -29.75])
+                    backPart();
+            translate([0, -tabWidth-6.5+(barbotDepth/2), (-cupHeight*1.5)])
+                bottomPart();
+            translate([0, -1.5, 0])
+                tubeCondensor();
+            
+        }
     }
 }
 
 module dxfSidePart(){
     projection(cut = false)
     {
-        rotate([0, 90, 0]){
+        rotate([0, 90, 0])
+        {
             difference(){
-                translate([wallThickness+(((pumpBracketWidth+(wallThickness/2))*numPumps-2)/2)-0.4, 0, -2.25])
+                translate([wallThickness+(((pumpBracketWidth+(wallThickness/2))*numPumps-2)/2)-0.4, -wallThickness*2-1.5, -2.25])
                     sidePart();//*/
                 translate([0, -1.5, 0])
                     tubeCondensor();
                 translate([0, 50+(wallThickness/2), 97.75])
                     pumpBracket();//*/
-                bottomPart();
+                translate([0, -tabWidth-6.5+(barbotDepth/2), (-cupHeight*1.5)])
+                    bottomPart();
                 translate([0, -(barbotDepth/2)-(wallThickness/2)-1.5, -29.75])
                     backPart();//*/
             }
