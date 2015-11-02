@@ -122,9 +122,8 @@ module pumpBracket() {
 module tubeCondensor() {
     union(){
         difference(){
-          translate([0, 0, 2]){
-            cube([(pumpBracketWidth+4)*numPumps, barbotDepth, wallThickness], center=true);
-          }
+          cube([(pumpBracketWidth+4)*numPumps, barbotDepth, wallThickness], center=true);
+          
           rotate([0, 0, 45]){
             for (i = [1 : abs(1) : numTubes]) {
               translate([(tubeRadius * cos((i * (360 / numTubes)))),
@@ -363,3 +362,4 @@ fullBarBot();
 //dxfSidePart();
 //dxfPumpBracket();
 //dxfRoundTubeCondensor();
+//tubeCondensor();

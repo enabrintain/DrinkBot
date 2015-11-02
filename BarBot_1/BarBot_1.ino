@@ -10,6 +10,7 @@
 
 #include <MenuSystem.h>
 #include <LiquidCrystal.h>
+#include "Recipes.h"
 
 //#define DEBUG
 #define NUM_KEYS 5
@@ -23,9 +24,9 @@ int oldkey=-1;
 MenuSystem ms;
 Menu message("How may I serve?");
 Menu mix("Mix Drinks");
-MenuItem mix_mi1("* Screwdriver");
-Menu mu2("Config Setttings");
-MenuItem mu2_mi2("NONE YET");
+MenuItem mix_screwdriver("* Screwdriver");
+Menu config_menu("Config Setttings");
+MenuItem config_mi("NONE YET");
 
 /*
 The LCD circuit:
@@ -59,11 +60,11 @@ void on_item2_selected(MenuItem* p_menu_item)
   delay(1500); // so we can look the result on the LCD
 }
 
-void on_item3_selected(MenuItem* p_menu_item)
+void mix_selected(MenuItem* p_menu_item)
 {
   lcd.setCursor(0,2);
-  lcd.print("Item3 Selected  ");
-  Serial.println("Item3 Selected  ");
+  lcd.print("mix Selected  ");
+  Serial.println("mix Selected  ");
   delay(1500); // so we can look the result on the LCD
 }
 
@@ -76,20 +77,20 @@ void setup()
   
   serialPrintHelp();
   Serial.println("Setting up the menu.");
-  // Menu setup
+  
   /*
   Menu Structure:
-   -Item1
-   -Item2
-   -Item3
-   --Item1
-   
+   -message: How may I serve?
+   -mix: Mix Drinks
+   --mix_mi1: * Screwdriver
+   -mu2: Config Setttings-
+   --mu2_mi2: NONE YET   
    */
- // message.add_item(&mu1_mi1, &on_item1_selected);
+   
   message.add_menu(&mix);
-  mix.add_item(&mix_mi1, &on_item3_selected);
-  message.add_menu(&mu2);
-  mu2.add_item(&mu2_mi2, &on_item3_selected);
+  mix.add_item(&mix_screwdriver, &mix_selected);
+  message.add_menu(&config_menu);
+  config_menu.add_item(&config_mi, &on_item2_selected);
   ms.set_root_menu(&message);
   Serial.println("Menu setted.");
   displayMenu();
@@ -97,9 +98,6 @@ void setup()
 
 void loop()
 {
-  
-  
-  
   // Handle serial commands
   serialHandler();
 
