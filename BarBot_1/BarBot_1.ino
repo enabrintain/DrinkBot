@@ -10,7 +10,7 @@
 
 #include <MenuSystem.h>
 #include <LiquidCrystal.h>
-#include "Recipes.h"
+#include "RecipeBook.h"
 
 //#define DEBUG
 #define NUM_KEYS 5
